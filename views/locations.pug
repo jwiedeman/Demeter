@@ -1,0 +1,58 @@
+extends layout
+
+block content
+  .pb-2.mt-2.mb-4.border-bottom
+    h3 New Location
+
+    form(method='POST')
+      input(type='hidden', name='_csrf', value=_csrf)
+      .form-group.row
+        label(class='col-md-2 col-form-label font-weight-bold', for='name') Location Name
+        .col-md-8
+          input.form-control(type='text', name='name', id='name', autocomplete='name', autofocus, required)
+      .form-group
+        .offset-md-2.col-md-8.p-1
+          button.btn.btn-primary(type='submit')
+            i.far.fa-envelope.fa-sm
+            | Submit new location
+
+
+
+
+  h3 Locations
+    br
+    each loc, index in location
+      div#accordion.container.accordion-toggle.border.border-dark
+        .panel.panel-default.row(data-toggle='collapse', href='#collapse'+index)
+          .col-xs
+            a= index
+          .col
+            h4
+                a= loc.name
+
+            
+        div(id='collapse'+index class=['panel-collapse','collapse','in'])
+            .panel-body
+              div!= loc
+  
+              div
+                form(action='/locations/delete', method='POST')
+                    input(type='hidden', name='_csrf', value=_csrf)
+                    input(type='hidden', name='deleteId', value=loc)
+                    button.btn.btn-danger(type='submit')
+                      | Delete Location
+
+              div
+                | Edit Form
+                form(action='/locations/edit', method='POST')
+                  input(type='hidden', name='_csrf', value=_csrf)
+                
+                  label current value : #{loc.name} 
+                  br
+                  input(type='text', name='test', value=loc.name)
+
+                  button.btn.btn-warning(type='submit')
+                      | Edit Location
+
+      
+
