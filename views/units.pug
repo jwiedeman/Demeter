@@ -1,0 +1,35 @@
+extends layout
+
+block content
+  
+
+
+
+  div.border.border-dark.container
+    h3 Locations
+      each loc, index in location
+        div#accordion.accordion-toggle.container.border.border-dark
+         .row(data-toggle='collapse', href='#collapse'+index)
+            .col
+              p= loc.name
+                br
+                =loc
+
+            
+        div(id='collapse'+index class=['panel-collapse','collapse','in']).container
+            .row
+              div.border.border-warning.col
+                .pb-2.mt-2.mb-4.border-bottom.container
+                  h3 New Unit
+                  form(method='POST' action='units/create')
+                    input(type='hidden', name='_csrf', value=_csrf)
+                    .form-group
+                      label(class='col-md-2 col-form-label font-weight-bold', for='name') Unit Name
+                      .col-sm
+                        input.border.border-dark.form-control(type='text', name='name', id='name',  required)
+                      .col-sm.pt-3
+                          button.btn.btn-secondary(type='submit')
+                            | Submit new unit
+                              
+    
+

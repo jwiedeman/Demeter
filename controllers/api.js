@@ -61,12 +61,12 @@ exports.getApi = (req, res) => {
 
 
 // Get DB
-exports.locations = (req, res) => {
+exports.getLocations = (req, res) => {
   location.find(function (err, location) {
     if (err) return console.error(err);
     console.log(location);
     res.render('locations', {
-      title: 'Loc',
+      title: 'Locations',
       location
     });
   })
@@ -93,10 +93,110 @@ exports.postDeleteLocations = async (req, res) => { // Remove location by ID
 }
 
 exports.postEditLocations = async (req, res) => { // Remove location by ID
- 
-  req.flash('success', { msg: '200 success' })
+ try {
+  await location.findByIdAndUpdate(req.body.itemId, {name : req.body.newName})
+  await location.save()
+  req.flash('success', { msg: '200 saved' })
+  return res.redirect('/locations');
+} catch (err) {
+  req.flash('errpr', { msg: '200 error out' })
   return res.redirect('/locations');
 }
+}
+
+
+
+
+// Get DB
+exports.getUnits = (req, res) => {
+  location.find(function (err, location) {
+    if (err) return console.error(err);
+    console.log(location);
+    res.render('units', {
+      title: 'Units',
+      location
+    });
+  })
+};
+
+
+
+exports.postUnits = (req, res) => {
+  let newlocation = new location({ name: req.body.name });
+  newlocation.save(function (err, locations) {
+    if (err) return console.error(err);
+  });
+  req.flash('success', { msg: 'New location has been successfuly saved!' });
+  return res.redirect('/locations');
+};
+
+
+exports.deleteUnit = async (req, res) => { // Remove location by ID
+  console.log('Deleting ', req.body)  
+  const locationToRemove = await location.findByIdAndDelete(JSON.parse(req.body.deleteId)._id)
+    if (!locationToRemove) req.flash('error', { msg: '404 err' })
+    req.flash('success', { msg: '200 success' })
+    return res.redirect('/locations');
+}
+
+exports.editUnits = async (req, res) => { // Remove location by ID
+ try {
+  await location.findByIdAndUpdate(req.body.itemId, {name : req.body.newName})
+  await location.save()
+  req.flash('success', { msg: '200 saved' })
+  return res.redirect('/locations');
+} catch (err) {
+  req.flash('errpr', { msg: '200 error out' })
+  return res.redirect('/locations');
+}
+}
+
+
+
+// Get DB
+exports.getSlots = (req, res) => {
+  location.find(function (err, location) {
+    if (err) return console.error(err);
+    console.log(location);
+    res.render('slots', {
+      title: 'Slots',
+      location
+    });
+  })
+};
+
+
+
+exports.postSlots= (req, res) => {
+  let newlocation = new location({ name: req.body.name });
+  newlocation.save(function (err, locations) {
+    if (err) return console.error(err);
+  });
+  req.flash('success', { msg: 'New location has been successfuly saved!' });
+  return res.redirect('/locations');
+};
+
+
+exports.deleteSlot = async (req, res) => { // Remove location by ID
+  console.log('Deleting ', req.body)  
+  const locationToRemove = await location.findByIdAndDelete(JSON.parse(req.body.deleteId)._id)
+    if (!locationToRemove) req.flash('error', { msg: '404 err' })
+    req.flash('success', { msg: '200 success' })
+    return res.redirect('/locations');
+}
+
+exports.editSlots = async (req, res) => { // Remove location by ID
+ try {
+  await location.findByIdAndUpdate(req.body.itemId, {name : req.body.newName})
+  await location.save()
+  req.flash('success', { msg: '200 saved' })
+  return res.redirect('/locations');
+} catch (err) {
+  req.flash('errpr', { msg: '200 error out' })
+  return res.redirect('/locations');
+}
+}
+
 
 
 

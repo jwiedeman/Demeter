@@ -8,8 +8,3 @@ exports.index = (req, res) => {
   });
 };
 
-exports.db = (req, res) => {
-  res.render('db', {
-    title: 'Db'
-  });
-};

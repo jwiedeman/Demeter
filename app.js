@@ -131,7 +131,6 @@ app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawes
  * Primary app routes.
  */
 app.get('/', homeController.index);
-app.get('/db', homeController.db);
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
@@ -155,10 +154,21 @@ app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userControl
  * API examples routes.
  */
 app.get('/api', apiController.getApi);
-app.get('/locations', apiController.locations);
-app.post('/locations', apiController.postNewLocations);
+
+app.get('/locations', apiController.getLocations);
+app.post('/locations/create', apiController.postNewLocations);
 app.post('/locations/edit', apiController.postEditLocations);
 app.post('/locations/delete', apiController.postDeleteLocations);
+
+app.get('/units', apiController.getUnits);
+app.post('/units/create', apiController.postUnits);
+app.post('/units/edit', apiController.editUnits);
+app.post('/units/delete', apiController.deleteUnit);
+
+app.get('/slots', apiController.getSlots);
+app.post('/slots/create', apiController.postSlots);
+app.post('/slots/edit', apiController.editSlots);
+app.post('/slots/delete', apiController.deleteSlot);
 
 
 app.get('/api/scraping', apiController.getScraping);
@@ -215,3 +225,5 @@ app.listen(app.get('port'), () => {
 });
 
 module.exports = app;
+
+
