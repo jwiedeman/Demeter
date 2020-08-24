@@ -1,52 +1,93 @@
 extends layout
 
 block content
-  .pb-2.mt-2.mb-4.border-bottom.border.border-dark.container
-    h3 New Slot
-
-    form(method='POST')
-      input(type='hidden', name='_csrf', value=_csrf)
-      .form-group.row
-        label(class='col-md-2 col-form-label font-weight-bold', for='name') Slot Name
-        .col-md-8
-          input.border.border-dark.form-control(type='text', name='name', id='name', autocomplete='name', autofocus, required)
-      .form-group
-        .offset-md-2.col-md-8.p-1
-          button.btn.btn-secondary(type='submit')
-            | Submit new Unit
+  
 
 
 
-  div.border.border-dark.container
-    h3 Locations
-      each loc, index in location
-        div#accordion.accordion-toggle.container.border.border-dark
-         .row(data-toggle='collapse', href='#collapse'+index)
+  div
+    each loc, index in location
+      #accordion.accordion-toggle.border-top.border-dark
+        div(data-toggle='collapse', href='#collapse'+index).container
+          .row
             .col
-              p= loc.name
+              strong='Production Location : ' +loc.name
+            .col
+              strong='Slots in location : ' + loc.slots.length
+             
 
-            
         div(id='collapse'+index class=['panel-collapse','collapse','in']).container
-            .row
-              div.border.border-warning.col
-                form(action='/locations/edit', method='POST')
-                  input(type='hidden', name='_csrf', value=_csrf)
-                  input(type='hidden', name='itemId', value=loc._id)
-                  label Modify value : 
-                  input(type='text', name='newName', value=loc.name)
-                  br
-                  button.btn.btn-warning(type='submit')
-                      | Save modified values
-
-
-              div.border.border-danger.col
-                p 
-                  | Deletes location & all location data
-                form(action='/locations/delete', method='POST')
+            .row.mb-1.border.border-success
+              div.col
+                  form(method='POST' action='slots/create')
                     input(type='hidden', name='_csrf', value=_csrf)
-                    input(type='hidden', name='deleteId', value=loc)
-                    button.btn.btn-danger(type='submit')
-                      | Delete location :  #{loc.name}
+                    .form-group
+                      label(class='col-md-2 col-form-label font-weight-bold', for='newUnitName') New Production slot Name
+                      .col-sm
+                        input(type='hidden', name='itemId', value=loc._id)
+                        input.border.border-dark.form-control(type='text', name='newUnitName', id='unitName',  required, placeholder ='New Slot Name')
+                      .col-sm.pt-3
+                          button.btn.btn-success(type='submit')
+                            | Add production slot to #{loc.name}
 
-    
+        div(id='collapse'+index class=['panel-collapse','collapse','in'])                    
+          each prodSlot, index in loc.slots 
+            div.border.border-dark.container.mb-1
+
+              div#accordion.accordion-toggle
+                  div(data-toggle='collapse', href='#slotdata'+index).border.container
+                    .row
+                      strong Slot Data
+                      strong Slots #{prodSlot.name}
+                  div(id='slotdata'+index class=['panel-collapse','collapse','in'])   
+                    .row
+                      .col
+                        strong='Production Slot Name : ' + prodSlot.name
+                        a.list-group-item.bg-warning Slot Data : #{prodSlot}
+
+
+              div#accordion.accordion-toggle
+                  div(data-toggle='collapse', href='#slotstatus'+index).border
+                    strong Slot Status
+                  div(id='slotstatus'+index class=[ 'panel-collapse','collapse','in'])   
+                    .row
+                      .col
+                        strong='Production Slot Name : ' + prodSlot.name
+                        a.list-group-item Slot Assigned Product : //todo
+
+
+              div#accordion.accordion-toggle
+                div(data-toggle='collapse', href='#editslot'+index).border.border-warning
+                  strong Edit Slot
+                div(id='editslot'+index class=['panel-collapse','collapse','in'])
+                  .row
+                    .col
+                      form(action='/slots/edit', method='POST').list-group-item
+                        input(type='hidden', name='_csrf', value=_csrf)
+                        input(type='hidden', name='slotId', value=prodSlot._id)
+                        label Current Name : #{prodSlot.name}
+                        br
+                        a New Value : 
+                        input(type='text', name='newName', value=prodSlot.name)
+                        br
+                        button.btn.btn-warning(type='submit')
+                            | Save modified production slot name 
+
+
+              div#accordion.accordion-toggle
+                div(data-toggle='collapse', href='#deleteslot'+index).border.border-danger
+                  strong Delete Slot
+                div(id='deleteslot'+index class=['panel-collapse','collapse','in'])   
+                  .row
+                    .col
+                      form(action='/slots/delete', method='POST').list-group-item
+                            input(type='hidden', name='_csrf', value=_csrf)
+                            input(type='hidden', name='locationId', value=loc._id)
+                            input(type='hidden', name='unitId', value=prodSlot._id)
+                            button.btn.btn-danger(type='submit')
+                              | Delete Production Unit :  #{prodSlot.name} 
+
+        
+
+
 

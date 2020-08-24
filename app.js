@@ -160,15 +160,16 @@ app.post('/locations/create', apiController.postNewLocations);
 app.post('/locations/edit', apiController.postEditLocations);
 app.post('/locations/delete', apiController.postDeleteLocations);
 
-app.get('/units', apiController.getUnits);
-app.post('/units/create', apiController.postUnits);
-app.post('/units/edit', apiController.editUnits);
-app.post('/units/delete', apiController.deleteUnit);
-
 app.get('/slots', apiController.getSlots);
 app.post('/slots/create', apiController.postSlots);
 app.post('/slots/edit', apiController.editSlots);
 app.post('/slots/delete', apiController.deleteSlot);
+
+app.get('/products', apiController.getProducts);
+app.post('/products/create', apiController.postProducts);
+app.post('/products/edit', apiController.editProducts);
+app.post('/products/delete', apiController.deleteProducts);
+
 
 
 app.get('/api/scraping', apiController.getScraping);

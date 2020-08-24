@@ -1,30 +1,31 @@
 extends layout
 
 block content
-  .pb-2.mt-2.mb-4.border-bottom.border.border-dark.container
-    h3 New Location
+  .border.border-success.my-3
 
     form(method='POST' action='locations/create')
       input(type='hidden', name='_csrf', value=_csrf)
-      .form-group.row
-        label(class='col-md-2 col-form-label font-weight-bold', for='name') Location Name
-        .col-md-8
-          input.border.border-dark.form-control(type='text', name='name', id='name', autocomplete='name', autofocus, required)
-      .form-group
-        .offset-md-2.col-md-8.p-1
-          button.btn.btn-secondary(type='submit')
-            | Submit new location
+      strong New Production Location
+      small A production location is a defined space where production occurs.
+      br
+      input.form-control.form-control-sm(type='text', name='name', id='name', autocomplete='name', autofocus, required, placeholder='New Production Location Name')
+      input.form-control.form-control-sm(type='number' placeholder='Number of slots in location', required, name='slotCount', )
+      
+      button.btn.btn-success(type='submit')
+            | Create new Production Location
 
 
 
   div.border.border-dark.container
-    h3 Locations
+    strong Production Locations
       each loc, index in location
-        div#accordion.accordion-toggle.container.border.border-dark
+        div#accordion.accordion-toggle.border.border-dark
          .row(data-toggle='collapse', href='#collapse'+index)
             .col
-              p= loc.name
-
+              strong='Name : '+ loc.name
+            .col
+              | Total Slots : #{loc.slots.length}
+              
             
         div(id='collapse'+index class=['panel-collapse','collapse','in']).container
             .row
@@ -37,7 +38,7 @@ block content
                   br
                   button.btn.btn-warning(type='submit')
                       | Save modified values
-
+                
 
               div.border.border-danger.col
                 p 

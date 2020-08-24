@@ -28,13 +28,31 @@ db.once('open', function() {
   console.log('API connected!')
 });
 
+/*
+
+*/
 
 const LocationSchema = new mongoose.Schema({
-  name: String
+  name: {type:String , unique: true},
+  slots : [
+    {
+    name: {type:String , unique: true},
+    growCycleStartTime : {type:String , unique: true},
+  }
+]
+});
+
+const productSchema = new mongoose.Schema({
+  name: {type:String , unique: true}
+});
+
+const inventorySchema = new mongoose.Schema({
+  name: {type:String , unique: true}
 });
 
 const location = mongoose.model( 'location', LocationSchema);
-
+const product = mongoose.model( 'product', productSchema);
+const inventory = mongoose.model( 'inventory', inventorySchema);
 /*
 const locations = new location({ name: 'fluffy' });
 
@@ -57,14 +75,10 @@ exports.getApi = (req, res) => {
   });
 };
 
-
-
-
-// Get DB
+// Get location page
 exports.getLocations = (req, res) => {
   location.find(function (err, location) {
     if (err) return console.error(err);
-    console.log(location);
     res.render('locations', {
       title: 'Locations',
       location
@@ -72,18 +86,33 @@ exports.getLocations = (req, res) => {
   })
 };
 
-
-
-exports.postNewLocations = (req, res) => {
-  let newlocation = new location({ name: req.body.name });
+// Add a new location submit button
+exports.postNewLocations = async (req, res) => {
+  let newlocation = new location({ name: req.body.name , slots:[]});
   newlocation.save(function (err, locations) {
     if (err) return console.error(err);
   });
+
+  for(i=0;i<=req.body.slotCount;i++){
+    try {
+      await location.updateOne({
+        _id: newlocation._id
+      }, {
+        $push: {
+          slots: {name: 'Slot - ' + i}
+        }
+      })
+      req.flash('success', { msg: '200 saved slot'+i })
+    } catch (err) {
+      req.flash('error', { msg: '200 error' })
+    }
+  }
+  
   req.flash('success', { msg: 'New location has been successfuly saved!' });
   return res.redirect('/locations');
 };
 
-
+// Delete a location
 exports.postDeleteLocations = async (req, res) => { // Remove location by ID
   console.log('Deleting ', req.body)  
   const locationToRemove = await location.findByIdAndDelete(JSON.parse(req.body.deleteId)._id)
@@ -92,9 +121,10 @@ exports.postDeleteLocations = async (req, res) => { // Remove location by ID
     return res.redirect('/locations');
 }
 
+// Get edit a location
 exports.postEditLocations = async (req, res) => { // Remove location by ID
  try {
-  await location.findByIdAndUpdate(req.body.itemId, {name : req.body.newName})
+  await location.findByIdAndUpdate(req.body.itemId, {name : req.body.newName })
   await location.save()
   req.flash('success', { msg: '200 saved' })
   return res.redirect('/locations');
@@ -107,57 +137,10 @@ exports.postEditLocations = async (req, res) => { // Remove location by ID
 
 
 
-// Get DB
-exports.getUnits = (req, res) => {
-  location.find(function (err, location) {
-    if (err) return console.error(err);
-    console.log(location);
-    res.render('units', {
-      title: 'Units',
-      location
-    });
-  })
-};
-
-
-
-exports.postUnits = (req, res) => {
-  let newlocation = new location({ name: req.body.name });
-  newlocation.save(function (err, locations) {
-    if (err) return console.error(err);
-  });
-  req.flash('success', { msg: 'New location has been successfuly saved!' });
-  return res.redirect('/locations');
-};
-
-
-exports.deleteUnit = async (req, res) => { // Remove location by ID
-  console.log('Deleting ', req.body)  
-  const locationToRemove = await location.findByIdAndDelete(JSON.parse(req.body.deleteId)._id)
-    if (!locationToRemove) req.flash('error', { msg: '404 err' })
-    req.flash('success', { msg: '200 success' })
-    return res.redirect('/locations');
-}
-
-exports.editUnits = async (req, res) => { // Remove location by ID
- try {
-  await location.findByIdAndUpdate(req.body.itemId, {name : req.body.newName})
-  await location.save()
-  req.flash('success', { msg: '200 saved' })
-  return res.redirect('/locations');
-} catch (err) {
-  req.flash('errpr', { msg: '200 error out' })
-  return res.redirect('/locations');
-}
-}
-
-
-
-// Get DB
+// Get slots page
 exports.getSlots = (req, res) => {
   location.find(function (err, location) {
     if (err) return console.error(err);
-    console.log(location);
     res.render('slots', {
       title: 'Slots',
       location
@@ -165,37 +148,169 @@ exports.getSlots = (req, res) => {
   })
 };
 
+// Add a new slot to a location
+exports.postSlots = async (req, res) => {
+  try {
+    await location.updateOne({
+      _id: req.body.itemId
+    }, {
+      $push: {
+        slots: {name: req.body.newSlotName}
+      }
+    })
 
 
-exports.postSlots= (req, res) => {
-  let newlocation = new location({ name: req.body.name });
-  newlocation.save(function (err, locations) {
+    req.flash('success', { msg: '200 saved' })
+    return res.redirect('/slots');
+  } catch (err) {
+    req.flash('error', { msg: '200 error out' })
+    return res.redirect('/slots');
+  }
+};
+
+// Delete a slot from a location
+exports.deleteSlot = async (req, res) => { // Remove location by ID
+  try {
+    await location.updateOne({
+        _id:req.body.locationId,
+      }, {
+        $pull: {
+            slots: {
+                _id: req.body.slotId
+            }
+        }
+    })
+    await location.save()
+    req.flash('success', { msg: '200 saved' })
+    return res.redirect('/slots');
+  } catch (err) {
+    req.flash('errpr', { msg: '200 error out' })
+    return res.redirect('/slots');
+  }
+  
+}
+
+//  Edit a slot of slots in a location
+exports.editSlots = async (req, res) => { // Remove location by ID
+ try {
+  console.log(req.body)
+  await location.findOneAndUpdate({
+    'slots._id':req.body.slotId,
+  }, {
+    $set: {
+        'slots.$.name':req.body.newName    
+    }
+  })
+  await location.save()
+  req.flash('success', { msg: '200 saved' })
+  return res.redirect('/slots');
+} catch (err) {
+  req.flash('error', { msg: '200 error out' })
+  return res.redirect('/slots');
+}
+}
+
+
+
+
+exports.getProducts = (req, res) => {
+  product.find(function (err, product) {
     if (err) return console.error(err);
-  });
-  req.flash('success', { msg: 'New location has been successfuly saved!' });
-  return res.redirect('/locations');
+    res.render('products', {
+      title: 'Products',
+      product
+    });
+  })
 };
 
 
-exports.deleteSlot = async (req, res) => { // Remove location by ID
+// Add a new product submit button
+exports.postProducts = async (req, res) => {
+  let newproduct = new product({ name: req.body.newProductName });
+  newproduct.save(function (err, products) {
+    if (err) return console.error(err);
+  });
+
+  
+  req.flash('success', { msg: 'New product has been successfuly saved!' });
+  return res.redirect('/products');
+};
+
+// Delete a product
+exports.deleteProducts = async (req, res) => { // Remove product by ID
   console.log('Deleting ', req.body)  
-  const locationToRemove = await location.findByIdAndDelete(JSON.parse(req.body.deleteId)._id)
-    if (!locationToRemove) req.flash('error', { msg: '404 err' })
+  const productToRemove = await product.findByIdAndDelete(JSON.parse(req.body.deleteId)._id)
+    if (!productToRemove) req.flash('error', { msg: '404 err' })
     req.flash('success', { msg: '200 success' })
-    return res.redirect('/locations');
+    return res.redirect('/products');
 }
 
-exports.editSlots = async (req, res) => { // Remove location by ID
+// Get edit a product
+exports.editProducts = async (req, res) => { // Remove product by ID
  try {
-  await location.findByIdAndUpdate(req.body.itemId, {name : req.body.newName})
-  await location.save()
+  await product.findByIdAndUpdate(req.body.itemId, {name : req.body.newName })
+  await product.save()
   req.flash('success', { msg: '200 saved' })
-  return res.redirect('/locations');
+  return res.redirect('/products');
 } catch (err) {
-  req.flash('errpr', { msg: '200 error out' })
-  return res.redirect('/locations');
+  req.flash('error', { msg: '200 error out' })
+  return res.redirect('/products');
 }
 }
+
+
+
+
+
+
+
+exports.getInventory = (req, res) => {
+  product.find(function (err, product) {
+    if (err) return console.error(err);
+    res.render('inventory', {
+      title: 'Inventory',
+      inventory
+    });
+  })
+};
+
+
+// Add a new product submit button
+exports.postInventory = async (req, res) => {
+  let newproduct = new product({ name: req.body.newProductName });
+  newproduct.save(function (err, inventory) {
+    if (err) return console.error(err);
+  });
+
+  
+  req.flash('success', { msg: 'New product has been successfuly saved!' });
+  return res.redirect('/inventory');
+};
+
+// Delete a product
+exports.deleteInventory = async (req, res) => { // Remove product by ID
+  console.log('Deleting ', req.body)  
+  const productToRemove = await product.findByIdAndDelete(JSON.parse(req.body.deleteId)._id)
+    if (!productToRemove) req.flash('error', { msg: '404 err' })
+    req.flash('success', { msg: '200 success' })
+    return res.redirect('/inventory');
+}
+
+// Get edit a product
+exports.editInventory = async (req, res) => { // Remove product by ID
+ try {
+  await product.findByIdAndUpdate(req.body.itemId, {name : req.body.newName })
+  await product.save()
+  req.flash('success', { msg: '200 saved' })
+  return res.redirect('/inventory');
+} catch (err) {
+  req.flash('error', { msg: '200 error out' })
+  return res.redirect('/inventory');
+}
+}
+
+
+
 
 
 
