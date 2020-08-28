@@ -171,6 +171,12 @@ app.post('/products/edit', apiController.editProducts);
 app.post('/products/delete', apiController.deleteProducts);
 
 
+app.get('/inventory', apiController.getInventory);
+app.post('/inventory/create', apiController.postInventory);
+app.post('/inventory/edit', apiController.editInventory);
+app.post('/inventory/delete', apiController.deleteInventory);
+
+
 
 app.get('/api/scraping', apiController.getScraping);
 app.get('/api/twilio', apiController.getTwilio);

@@ -277,7 +277,7 @@ exports.getInventory = (req, res) => {
 
 // Add a new product submit button
 exports.postInventory = async (req, res) => {
-  let newproduct = new product({ name: req.body.newProductName });
+  let newproduct = new inventory({ name: req.body.newProductName });
   newproduct.save(function (err, inventory) {
     if (err) return console.error(err);
   });

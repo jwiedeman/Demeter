@@ -6,7 +6,7 @@ block content
       div(data-toggle='collapse', href='#collapse').container
         .row
           .col
-            strong Add New Product
+            strong Add New Inventory Item
             
 
       div(id='collapse' class=['panel-collapse','collapse','in']).container
@@ -15,21 +15,21 @@ block content
                 form(method='POST' action='products/create')
                   input(type='hidden', name='_csrf', value=_csrf)
                   .form-group
-                    label(class='col-md-2 col-form-label font-weight-bold', for='newProductName') New Product Name
+                    label(class='col-md-2 col-form-label font-weight-bold', for='newProductName') New Inventory Item Name
                     .col-sm
                       input(type='hidden', name='itemId', value='loc._id')
-                      input.border.border-dark.form-control(type='text', name='newProductName', id='unitName',  required, placeholder ='New Product Name')
+                      input.border.border-dark.form-control(type='text', name='newProductName', id='unitName',  required, placeholder ='New Inventory Item Name')
                     .col-sm.pt-3
                         button.btn.btn-success(type='submit')
                           | Add product
 
   div.border.border-dark.container
     strong Products
-      each loc, index in product
+      each loc, index in inventory
         div#accordion.accordion-toggle.border.border-dark
          .row(data-toggle='collapse', href='#collapse'+index)
             .col
-              strong='Name : '+ loc.name
+              strong='Name : '+ loc
             .col
               | Total Slots : 
               
@@ -39,9 +39,9 @@ block content
               div.border.border-warning.col
                 form(action='/products/edit', method='POST')
                   input(type='hidden', name='_csrf', value=_csrf)
-                  input(type='hidden', name='itemId', value=loc._id)
+                  input(type='hidden', name='itemId', value=loc)
                   label Modify value : 
-                  input(type='text', name='newName', value=loc.name)
+                  input(type='text', name='newName', value=loc)
                   br
                   button.btn.btn-warning(type='submit')
                       | Save modified values
@@ -54,4 +54,4 @@ block content
                     input(type='hidden', name='_csrf', value=_csrf)
                     input(type='hidden', name='deleteId', value=loc)
                     button.btn.btn-danger(type='submit')
-                      | Delete location :  #{loc.name}
+                      | Delete location :  #{loc}
