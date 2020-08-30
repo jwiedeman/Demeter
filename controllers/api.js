@@ -141,10 +141,14 @@ exports.postEditLocations = async (req, res) => { // Remove location by ID
 exports.getSlots = (req, res) => {
   location.find(function (err, location) {
     if (err) return console.error(err);
-    res.render('slots', {
-      title: 'Slots',
-      location
-    });
+    product.find(function (err, product) {
+      if (err) return console.error(err);
+      res.render('slots', {
+        title: 'Slots',
+        location,
+        product
+      });
+    })
   })
 };
 
