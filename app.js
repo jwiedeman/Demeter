@@ -72,8 +72,8 @@ app.use(sass({
   dest: path.join(__dirname, 'public')
 }));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({limit: '10mb', extended: true}))
+app.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
 app.use(session({
   resave: true,
   saveUninitialized: true,
@@ -95,6 +95,7 @@ app.use((req, res, next) => {
     lusca.csrf()(req, res, next);
   }
 });
+
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
 app.disable('x-powered-by');
