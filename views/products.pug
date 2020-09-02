@@ -26,32 +26,77 @@ block content
   div.border.border-dark.container
     strong Products
       each loc, index in product
-        div#accordion.accordion-toggle.border.border-dark
-         .row(data-toggle='collapse', href='#collapse'+index)
+        div.border.border-dark
+         .row
             .col
-              strong='Name : '+ loc.name
+              ='Name : '+ loc.name
+              br
+              | Total Steps : 
             .col
-              | Total Slots : 
-              
-            
-        div(id='collapse'+index class=['panel-collapse','collapse','in']).container
-            .row
-              div.border.border-warning.col
-                form(action='/products/edit', method='POST')
-                  input(type='hidden', name='_csrf', value=_csrf)
-                  input(type='hidden', name='itemId', value=loc._id)
-                  label Modify value : 
-                  input(type='text', name='newName', value=loc.name)
-                  br
-                  button.btn.btn-warning(type='submit')
-                      | Save modified values
-                
+              // Button trigger modal
+              .btn.btn-warning(type='button' data-toggle='modal' data-target='#EditModal'+ loc._id)
+                | Edit Product
+              // Modal
+              .modal.fade(id='EditModal'+ loc._id,tabindex='-1'  aria-hidden='true')
+                .modal-dialog.modal-dialog-centered(role='document')
+                  .modal-content
+                    form(action='/products/edit', method='POST')
+                      .modal-header
+                        h5#exampleModalLongTitle.modal-title #{loc.name}
+                      .modal-body
+                        div.border.border-warning.col
+                          input(type='hidden', name='_csrf', value=_csrf)
+                          input(type='hidden', name='itemId', value=loc._id)
+                          label Modify value :
+                          input(type='text', name='newName', value=loc.name)
+                            
+                      .modal-footer
+                        button.btn.btn-secondary(type='button' data-dismiss='modal') Close
+                        button.btn.btn-warning(type='submit')
+                                | Save modified values
+            .col 
+              // Button trigger modal
+              .btn.btn-danger(type='button' data-toggle='modal' data-target='#DeleteModal'+ loc._id)
+                | Delete Product
+              // Modal
+              .modal.fade(id='DeleteModal'+ loc._id,tabindex='-1'  aria-hidden='true')
+                .modal-dialog.modal-dialog-centered(role='document')
+                  .modal-content
+                    form(action='/products/delete', method='POST')
+                      .modal-header
+                        h5#exampleModalLongTitle.modal-title #{loc.name}
+                      .modal-body
+                        div.border.border-danger.col
+                          p 
+                            | Deletes location & all location data
+                            input(type='hidden', name='_csrf', value=_csrf)
+                            input(type='hidden', name='deleteId', value=loc)
+                        
+                      .modal-footer
+                        button.btn.btn-secondary(type='button' data-dismiss='modal') Close
+                        button.btn.btn-danger(type='submit')
+                              | Delete product :  #{loc.name}
+            .col 
+              // Button trigger modal
+              .btn.btn-primary(type='button' data-toggle='modal' data-target='#StepModal'+ loc._id)
+                | Steps
+              // Modal
+              .modal.fade(id='StepModal'+ loc._id,tabindex='-1'  aria-hidden='true')
+                .modal-dialog.modal-dialog-centered(role='document')
+                  .modal-content
+                    form(action='/products/delete', method='POST')
+                      .modal-header
+                        h5#exampleModalLongTitle.modal-title #{loc.name}
+                      .modal-body
+                        div.border.border-danger.col
+                          p 
+                            | Deletes location & all location data
+                            input(type='hidden', name='_csrf', value=_csrf)
+                            input(type='hidden', name='deleteId', value=loc)
+                        
+                      .modal-footer
+                        button.btn.btn-secondary(type='button' data-dismiss='modal') Close
+                        button.btn.btn-danger(type='submit')
+                              | Delete product :  #{loc.name}
 
-              div.border.border-danger.col
-                p 
-                  | Deletes location & all location data
-                form(action='/products/delete', method='POST')
-                    input(type='hidden', name='_csrf', value=_csrf)
-                    input(type='hidden', name='deleteId', value=loc)
-                    button.btn.btn-danger(type='submit')
-                      | Delete location :  #{loc.name}
+           
